@@ -11,6 +11,8 @@ export type image_scaleType = "Stretch" | "Crop" | "Fit" | "Slice" | "Tile"| str
 export type image_resample  = "Default" | "Pixelated"| string
 export type stroke_mode     = "Contextual" | "Border" | string
 export type stroke_type     = "Round" | "Miter" | "Bevel" | string
+export type ProductType = "GamePass" | "Asset" | "Product"
+
 export type UitoClass       = "Frame" | "ImageLabel" | "TextLabel" | 
 	"Folder"| "TextBox" | "UIStroke" | 
 	"UIGradient" | "UIPadding" | "UISizeConstraint" | 
@@ -141,6 +143,19 @@ export type UitoTextInput  = UitoGuiObject&UitoTextParams&{
 export type UitoFolder     = UitoObject&{
 	class:"Folder" | string
 }
+export type UitoDonation   = UitoTextLabel&{
+	product_type:ProductType,
+	thanks_href:string,
+	product:string,
+	class:"TextButton?donation"
+}
+export type UitoRedir      = UitoTextLabel&{
+	--new_tab": "true",
+	--"href": "example.rbx",
+	class:"TextButton?link",
+	href:string,
+	new_tab: stringBool
+}
 
 
 local function ParseFrame(Frame:GuiObject,Class:UitoClass):UitoFrame
@@ -177,7 +192,7 @@ local function ParseScrollFrame(Frame:ScrollingFrame):UitoScrollFrame
 	return BaseParsed
 end
 
-local function ParseTextLabel(Label:TextLabel | TextButton,Class:UitoClass):UitoTextLabel
+local function ParseTextLabel(Label:TextLabel | TextButton,Class:UitoClass):UitoTextLabel | UitoDonation | UitoRedir
 	assert(Label:IsA("TextLabel") or Label:IsA("TextButton") or Label:IsA("TextBox"), "Expected a valid text label to parse.")
 	local BaseParsed = ParseFrame(Label,Class)
 	
@@ -196,6 +211,18 @@ local function ParseTextLabel(Label:TextLabel | TextButton,Class:UitoClass):Uito
 	
 	BaseParsed.text = Label.Text
 	
+	if Label:GetAttribute("product") then
+		BaseParsed.class = "TextButton?donation"
+		BaseParsed.product = Label:GetAttribute("product")
+		BaseParsed.thanks_href = Label:GetAttribute("thanks_href") or "uito.rbx"
+		BaseParsed.product_type = Label:GetAttribute("type") or "GamePass"
+	end
+	
+	if Label:GetAttribute("href") then
+		BaseParsed.class = "TextButton?link"
+		BaseParsed.href = Label:GetAttribute("href")
+		BaseParsed.new_tab = tostring(Label:GetAttribute("newtab")) or tostring(false)
+	end
 	
 	return BaseParsed
 end
