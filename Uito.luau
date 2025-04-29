@@ -1,6 +1,6 @@
 --!optimize 2
 
-local json = require(script:WaitForChild("Json"))
+local json = require("./Json")
 local uito = {}
 
 export type stringBool      = "true" | "false" | string
