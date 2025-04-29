@@ -25,6 +25,14 @@ export type UitoObject      = {
 
 -- GUI STYLING
 
+export type UitoPadding = UitoObject&{
+	top:string,
+	left:string,
+	bottom:string,
+	right:string,
+	class:"UIPadding"
+}
+
 export type UitoGradient = UitoObject&{
 	rotation:string,
 	gradient_transparency: string,
@@ -347,12 +355,27 @@ local function ParseUIGradient(Gradient:UIGradient):UitoGradient
 	Parsed.gradient_transparency = ParseNumberSequence(Gradient.Transparency)
 	Parsed.rotation = tostring(Gradient.Rotation)
 	Parsed.gradient_offset = tostring(Gradient.Offset)
-
-
 	return Parsed
 end
 
 
+local function ParseUiPadding(Padding:UIPadding)
+	assert(
+		Padding and type(Padding) == "userdata" and Padding:IsA("UIPadding"),
+		`Expected a valid UIPadding to parse instead got {typeof(Padding)}, {if typeof(Padding) == "Instance" then Padding.ClassName else ""}`
+	)
+	local Parsed = {}
+	Parsed.class = "UIPadding"
+	Parsed.alias = Padding.Name
+	Parsed.globalid = json.getID()::string
+	
+	Parsed.top = tostring(Padding.PaddingTop)
+	Parsed.bottom = tostring(Padding.PaddingBottom)
+	Parsed.left = tostring(Padding.PaddingLeft)
+	Parsed.right = tostring(Padding.PaddingRight)
+	
+	return Parsed
+end
 
 local function PointToParserForObject(RootObject:GuiObject):UitoGuiObject
 	assert(
@@ -386,6 +409,8 @@ local function PointToParserForObject(RootObject:GuiObject):UitoGuiObject
 		RootParsed = ParseUISizeConstraint(RootObject)
 	elseif RootObject:IsA("UIGradient") then
 		RootParsed = ParseUIGradient(RootObject)
+	elseif RootObject:IsA("UIPadding") then
+		RootParsed = ParseUiPadding(RootObject)
 	else
 		--unreachable;
 		error("Invalid Gui object found. Catweb only supports: Frames, TextLabels, TextButtons, ImageLabels, TextInputs, Scrolling Frames, and Folders. "..RootObject.ClassName)
