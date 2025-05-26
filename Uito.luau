@@ -5,8 +5,8 @@ local uito = {}
 
 export type stringBool      = "true" | "false" | string
 export type alignx          = "Left" | "Right" | "Center"| string
-export type aligny     		  = "Top"  | "Bottom"| "Center"| string
-export type truncate  		  = "None" | "AtEnd" | "SplitWord"| string
+export type aligny     	    = "Top"  | "Bottom"| "Center"| string
+export type truncate  	    = "None" | "AtEnd" | "SplitWord"| string
 export type image_scaleType = "Stretch" | "Crop" | "Fit" | "Slice" | "Tile"| string
 export type image_resample  = "Default" | "Pixelated"| string
 export type stroke_mode     = "Contextual" | "Border" | string
@@ -299,7 +299,7 @@ local function ParseUIListLayout(List:UIListLayout):UitoList
 	Parsed.class = "UIListLayout"
 	Parsed.alias = List.Name
 	Parsed.globalid = json.getID()
-	Parsed.direction = List.SortOrder.Name
+	Parsed.direction = List.FillDirection.Name
 	Parsed.alignment_horizontal = List.HorizontalAlignment.Name
 	Parsed.alignment_vertical = List.VerticalAlignment.Name
 	Parsed.padding = tostring(List.Padding)
